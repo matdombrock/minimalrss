@@ -1,0 +1,41 @@
+:root {
+  --main-color: #ff6600;
+  --background-color: #111111;
+  --text-color: #ffffff;
+}
+
+body {
+  font-family: monospace;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0 1em;
+}
+h1 {
+  font-size: 2em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+#rss-feed {
+  max-width: 800px;
+  margin: 0 auto;
+}
+#rss-feed > div {
+  margin-bottom: 2em;
+}
+a, a:visited {
+  color: var(--main-color);
+}
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5em;
+  }
+  body {
+    padding: 0 0.5em;
+  }
+  #rss-feed > div {
+    font-size: 1em;
+    max-width: 100%;
+  }
+}
+
