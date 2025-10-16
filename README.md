@@ -2,6 +2,8 @@
 
 A minimal RSS reader with in-memory caching.
 
+[Install Bun](https://bun.com/docs/installation)
+
 To install dependencies:
 
 ```bash
