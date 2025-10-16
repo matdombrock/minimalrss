@@ -17,12 +17,13 @@ type RSSResponse = {
     fetchedAt: number;
     fetchTime: number;
     sourceCount: number;
+    cached: boolean;
   };
 };
 
 class RSSReader {
   private cache: {
-    lastResponse: RSSItem[] | null;
+    lastResponse: RSSResponse | null;
     lastFetch: number;
     cacheDuration: number;
   };
@@ -43,20 +44,22 @@ class RSSReader {
         fetchedAt: Date.now(),
         fetchTime: 0,
         sourceCount: this.urls.length,
+        cached: false,
       },
     };
     const startTime = Date.now();
-    for (let url of this.urls) {
-      response.items.push(... await this.urlToRSSItem(url));
-    }
+    // Start all requests at once
+    const itemsArrays = await Promise.all(this.urls.map(url => this.urlToRSSItem(url)));
+    // Flatten the array of arrays
+    response.items = itemsArrays.flat();
     // Sort by date descending
     response.items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     // Update cache
-    this.updateCache(response.items);
+    this.updateCache(response);
     response.meta.fetchTime = Date.now() - startTime;
     return response;
   }
-  checkCache(): RSSItem[] | null {
+  checkCache(): RSSResponse | null {
     const now = Date.now();
     if (this.cache.lastResponse && (now - this.cache.lastFetch) < this.cache.cacheDuration) {
       console.log('Serving from cache');
@@ -71,8 +74,10 @@ class RSSReader {
     const cleanDescription = DOMPurify.sanitize(dirty, { ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'] });
     return cleanDescription;
   }
-  private updateCache(response: RSSItem[]): void {
-    this.cache.lastResponse = response;
+  private updateCache(response: RSSResponse): void {
+    const responseCopy = JSON.parse(JSON.stringify(response));
+    responseCopy.meta.cached = true;
+    this.cache.lastResponse = responseCopy;
     this.cache.lastFetch = Date.now();
   }
   private async rssToJson(url: string): Promise<any> {

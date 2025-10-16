@@ -6,9 +6,8 @@ const fetchedAtElement = document.getElementById('fetched-at');
 fetch(rssUrl)
   .then((response) => response.json())
   .then((data) => {
-    console.log(data);
     itemCountElement.textContent = data.items.length;
-    fetchTimeElement.textContent = data.meta.fetchTime;
+    fetchTimeElement.textContent = `${data.meta.fetchTime} ${data.meta.cached ? '(cached)' : ''}`;
     fetchedAtElement.textContent = new Date(data.meta.fetchedAt).toLocaleString();
     data.items.forEach((item) => {
       const itemDiv = document.createElement('div');
