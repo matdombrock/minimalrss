@@ -1,12 +1,17 @@
 # Minimal RSS Reader
 
-A minimal RSS reader with in-memory caching.
+A minimal self-hosted RSS reader with in-memory caching.
+
+## Features
+
+- A back-end written for the `bun` JavaScript runtime
+- A front-end written in vanilla web technologies (no framework)
+
+## Setup
 
 This project uses the `bun` runtime. An alternative to NodeJS/NPM and more. 
 
 [Install Bun](https://bun.com/docs/installation)
-
-## Setup
 
 ```bash
 bun install
