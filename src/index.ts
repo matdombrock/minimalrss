@@ -5,9 +5,9 @@ import RSSReader from './Reader';
 
 const app = express();
 app.use(express.static('public'));
-const reader = new RSSReader(config);
+const reader = new RSSReader(config.urls);
 
-app.get('/json', async (req: Request, res: Response) => {
+app.get('/json', async (_req: Request, res: Response) => {
   // Check cache
   const cache = reader.checkCache();
   if (cache) {

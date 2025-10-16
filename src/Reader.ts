@@ -3,11 +3,6 @@ import { Parser } from 'xml2js';
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 
-type Config = {
-  port: number;
-  urls: string[];
-};
-
 type RSSItem = {
   title: string;
   link: string;
@@ -22,19 +17,19 @@ class RSSReader {
     lastFetch: number;
     cacheDuration: number;
   };
-  private config: Config;
-  constructor(config: Config) {
-    this.config = config;
+  private urls: string[];
+  constructor(urls: string[]) {
+    this.urls = urls;
     this.cache = {
       lastResponse: null,
       lastFetch: 0,
       cacheDuration: 5 * 60 * 1000, // 5 minutes
     };
   }
-  async fetchAll() {
+  async fetchAll(): Promise<RSSItem[]> {
     console.log('Fetching new data');
     let response: RSSItem[] = [];
-    for (let url of this.config.urls) {
+    for (let url of this.urls) {
       response.push(... await this.urlToRSSItem(url));
     }
     // Sort by date descending
@@ -58,7 +53,7 @@ class RSSReader {
     const cleanDescription = DOMPurify.sanitize(dirty, { ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'] });
     return cleanDescription;
   }
-  private updateCache(response: RSSItem[]) {
+  private updateCache(response: RSSItem[]): void {
     this.cache.lastResponse = response;
     this.cache.lastFetch = Date.now();
   }
@@ -69,7 +64,7 @@ class RSSReader {
     const json = await parser.parseStringPromise(xml);
     return json;
   }
-  private async urlToRSSItem(url: string) {
+  private async urlToRSSItem(url: string): Promise<RSSItem[]> {
     const json = await this.rssToJson(url);
     const source = json.rss.channel.link;
     let out: RSSItem[] = [];
