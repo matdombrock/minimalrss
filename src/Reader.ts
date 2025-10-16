@@ -34,7 +34,7 @@ class RSSReader {
     this.cache = {
       lastResponse: null,
       lastFetch: 0,
-      cacheDuration: 5 * 60 * 1000, // 5 minutes
+      cacheDuration: Number(process.env.RSS_CACHE_DUR) || (5 * 60 * 1000), // 5 minutes
     };
   }
   async fetchAll(): Promise<RSSResponse> {

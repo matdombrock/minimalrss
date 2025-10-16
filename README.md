@@ -36,9 +36,13 @@ bun run serve
 
 Configured:
 ```bash
-RSS_PORT=3001 RSS_URLS=urls-example.txt bun run serve
+RSS_URLS=../my-urls.txt \
+RSS_PORT=3001 \
+RSS_CACHE_DUR=120 \
+bun run serve
 ```
 
-- `RSS_PORT` defaults to 3000
-- `RSS_URLS` defaults to 'urls.txt'
+- `RSS_URLS` - URL list path - defaults to 'urls-example.txt'
+- `RSS_PORT` - Server port - defaults to 3000
+- `RSS_CACHE_DUR` - Cache duration in seconds - defauts to 5 mins. 
 

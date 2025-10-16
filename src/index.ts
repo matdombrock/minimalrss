@@ -3,13 +3,13 @@ import express from 'express';
 import type { Request, Response } from 'express';
 import RSSReader from './Reader';
 
-const urlsRaw = fs.readFileSync(process.env.RSS_URLS || 'urls.txt', 'utf-8');
+const urlsRaw = fs.readFileSync(process.env.RSS_URLS || 'urls-example.txt', 'utf-8');
 const urls: string[] = urlsRaw.split('\n').filter(line => line.trim() !== '');
 const port = process.env.RSS_PORT || 3000;
 const app = express();
 const reader = new RSSReader(urls);
 
-console.log(`Loaded ${urls.length} URLs from urls.txt`);
+console.log(`Loaded ${urls.length} URLs from list`);
 for (const url of urls) {
   console.log(`- ${url}`);
 }
