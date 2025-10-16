@@ -18,6 +18,7 @@ type RSSResponse = {
     fetchTime: number;
     sourceCount: number;
     cached: boolean;
+    errors: string[];
   };
 };
 
@@ -45,11 +46,22 @@ class RSSReader {
         fetchTime: 0,
         sourceCount: this.urls.length,
         cached: false,
+        errors: []
       },
     };
     const startTime = Date.now();
-    // Start all requests at once
-    const itemsArrays = await Promise.all(this.urls.map(url => this.urlToRSSItem(url)));
+    // Start all requests at once, handle errors gracefully
+    const itemsArrays = await Promise.all(
+      this.urls.map(async url => {
+        try {
+          return await this.urlToRSSItem(url);
+        } catch (_error) {
+          console.error(`Failed to fetch or parse RSS from ${url}`);
+          response.meta.errors.push(url);
+          return [];
+        }
+      })
+    );
     // Flatten the array of arrays
     response.items = itemsArrays.flat();
     // Sort by date descending
