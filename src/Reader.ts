@@ -11,6 +11,15 @@ type RSSItem = {
   source: string;
 };
 
+type RSSResponse = {
+  items: RSSItem[];
+  meta: {
+    fetchedAt: number;
+    fetchTime: number;
+    sourceCount: number;
+  };
+};
+
 class RSSReader {
   private cache: {
     lastResponse: RSSItem[] | null;
@@ -26,16 +35,25 @@ class RSSReader {
       cacheDuration: 5 * 60 * 1000, // 5 minutes
     };
   }
-  async fetchAll(): Promise<RSSItem[]> {
+  async fetchAll(): Promise<RSSResponse> {
     console.log('Fetching new data');
-    let response: RSSItem[] = [];
+    let response: RSSResponse = {
+      items: [],
+      meta: {
+        fetchedAt: Date.now(),
+        fetchTime: 0,
+        sourceCount: this.urls.length,
+      },
+    };
+    const startTime = Date.now();
     for (let url of this.urls) {
-      response.push(... await this.urlToRSSItem(url));
+      response.items.push(... await this.urlToRSSItem(url));
     }
     // Sort by date descending
-    response.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    response.items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     // Update cache
-    this.updateCache(response);
+    this.updateCache(response.items);
+    response.meta.fetchTime = Date.now() - startTime;
     return response;
   }
   checkCache(): RSSItem[] | null {

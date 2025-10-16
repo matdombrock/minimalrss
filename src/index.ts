@@ -24,6 +24,7 @@ app.get('/json', async (_req: Request, res: Response) => {
   }
   // Fetch new data
   const response = await reader.fetchAll();
+  console.log(`Fetched ${response.items.length} items in ${response.meta.fetchTime}ms from ${response.meta.sourceCount} sources`);
   // Return response
   res.json(response);
 });
