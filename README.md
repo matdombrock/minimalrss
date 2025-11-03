@@ -33,6 +33,9 @@ https://hnrss.org/frontpage
 
 ## Swap out the front-end
 
+Its easily possible (but fully optional) to swap out the front-end. You could for example make a "fancy" UI using CSS, add searching / filtering etc. 
+
+### The `/json` endpoint
 The back-end's main job is to take a set of RSS feeds, fetch their XML data and return a JSON object that contains the feed items and metadata. 
 
 Make a request to `/json` to get this data. 
