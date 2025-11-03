@@ -2,9 +2,8 @@
   "name": "minimal rss reader",
   "module": "index.ts",
   "type": "module",
-  "private": true,
   "scripts": {
-    "serve": "bun run src/index.ts",
+    "serve": "bun src/server",
   },
   "devDependencies": {
     "@types/bun": "latest",
