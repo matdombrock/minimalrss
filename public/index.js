@@ -100,7 +100,7 @@ fetch(rssUrl)
       descWrap.classList.add('feed-item-desc-wrap');
       itemDiv.appendChild(descWrap);
 
-      const descOverlay = document.createElement('div');
+      const descOverlay = document.createElement('a');
       descOverlay.classList.add('feed-item-overlay');
       descOverlay.textContent = '↓ more ↓';
       descWrap.appendChild(descOverlay);

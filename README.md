@@ -4,6 +4,8 @@ A minimal self-hosted RSS reader with a file system-based cache for efficient pe
 
 ## Features
 
+- Very minimal code base
+- Screen reader compatible!
 - Back-end written for the `bun` JavaScript runtime
 - Front-end in vanilla web technologies (no framework)
 - File system-based caching for fast repeated access and reduced network usage
