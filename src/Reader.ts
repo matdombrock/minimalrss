@@ -24,20 +24,17 @@ type RSSResponse = {
   };
 };
 
+import fs from 'fs';
+import path from 'path';
+
 class RSSReader {
-  private cache: {
-    lastResponse: RSSResponse | null;
-    lastFetch: number;
-    cacheDuration: number;
-  };
+  private cacheFile: string;
+  private cacheDuration: number;
   private urls: string[];
-  constructor(urls: string[]) {
+  constructor(urls: string[], cacheDuration: number = 5 * 60 * 1000) {
     this.urls = urls;
-    this.cache = {
-      lastResponse: null,
-      lastFetch: 0,
-      cacheDuration: Number(process.env.RSS_CACHE_DUR) || (5 * 60 * 1000), // 5 minutes
-    };
+    this.cacheDuration = cacheDuration;
+    this.cacheFile = path.join(process.cwd(), 'rss_cache.json');
   }
   async fetchAll(): Promise<RSSResponse> {
     console.log('Fetching new data');
@@ -73,20 +70,23 @@ class RSSReader {
       response.feeds[source] = itemsArrays[i]!;
     }
 
-    // Flatten the array of arrays
-    // response.items = itemsArrays.flat();
-
     // Update cache
     this.updateCache(response);
     response.meta.fetchTime = Date.now() - startTime;
     return response;
   }
   checkCache(): RSSResponse | null {
-    const now = Date.now();
-    if (this.cache.lastResponse && (now - this.cache.lastFetch) < this.cache.cacheDuration) {
-      console.log('Serving from cache');
-      console.log(`Cache time remaining: ${((this.cache.cacheDuration - (now - this.cache.lastFetch)) / 1000).toFixed(0)} seconds`);
-      return this.cache.lastResponse;
+    if (!fs.existsSync(this.cacheFile)) return null;
+    try {
+      const data = fs.readFileSync(this.cacheFile, 'utf-8');
+      const cache = JSON.parse(data) as { lastResponse: RSSResponse, lastFetch: number };
+      const now = Date.now();
+      if (cache.lastResponse && (now - cache.lastFetch) < this.cacheDuration) {
+        console.log('Serving from file cache');
+        return cache.lastResponse;
+      }
+    } catch (e) {
+      console.error('Failed to read cache file:', e);
     }
     return null;
   }
@@ -99,8 +99,15 @@ class RSSReader {
   private updateCache(response: RSSResponse): void {
     const responseCopy = JSON.parse(JSON.stringify(response));
     responseCopy.meta.cached = true;
-    this.cache.lastResponse = responseCopy;
-    this.cache.lastFetch = Date.now();
+    const cacheData = {
+      lastResponse: responseCopy,
+      lastFetch: Date.now(),
+    };
+    try {
+      fs.writeFileSync(this.cacheFile, JSON.stringify(cacheData), 'utf-8');
+    } catch (e) {
+      console.error('Failed to write cache file:', e);
+    }
   }
   private async rssToJson(url: string): Promise<any> {
     const response = await axios.get(url);

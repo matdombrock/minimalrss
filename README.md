@@ -1,11 +1,14 @@
 # Minimal RSS Reader
 
-A minimal self-hosted RSS reader with in-memory caching.
+A minimal self-hosted RSS reader with a file system-based cache for efficient performance and persistence.
 
 ## Features
 
-- A back-end written for the `bun` JavaScript runtime
-- A front-end written in vanilla web technologies (no framework)
+- Back-end written for the `bun` JavaScript runtime
+- Front-end in vanilla web technologies (no framework)
+- File system-based caching for fast repeated access and reduced network usage
+- Grouped feed data structure for easy access to items by source
+- Easily swappable front-end
 
 ## Setup
 
@@ -56,26 +59,43 @@ bun serve
 - `RSS_PORT` - Server port - defaults to 3000
 - `RSS_CACHE_DUR` - Cache duration in seconds - defaults to 5 mins. 
 
+### File System-Based Caching
+
+The server uses a file system-based cache (by default `rss_cache.json` in the working directory) to store the latest fetched RSS data. This means:
+- Faster repeated requests (no need to re-fetch feeds until cache expires)
+- Cache persists across server restarts
+- Cache duration is configurable via `RSS_CACHE_DUR`
+
+**Benefits:**
+- Greatly reduces network traffic and speeds up response times for repeated requests
+- Ensures consistent data even if the server is restarted within the cache window
+- Easy to inspect or clear the cache manually if needed
+
+
 ## Swap out the front-end
 
 Its easily possible (but fully optional) to swap out the front-end. You could for example make a "fancy" UI using CSS, add searching / filtering etc. 
+
+Just swap out the files in the `public` directory to change the front-end. 
 
 ### The `/json` endpoint
 The back-end's main job is to take a set of RSS feeds, fetch their XML data and return a JSON object that contains the feed items and metadata. 
 
 Make a request to `/json` to get this data. 
 
-The data will have a format something like this:
+The data returned from `/json` is structured as follows:
 
 ```ts
 type RSSResponse = {
-  items: RSSItem[];
+  feeds: {
+    [key: string]: RSSItem[]; // Each key is a feed source URL, value is an array of items
+  };
   meta: {
-    fetchedAt: number;
-    fetchTime: number;
-    sourceCount: number;
-    cached: boolean;
-    errors: string[];
+    fetchedAt: number;    // Timestamp when data was fetched
+    fetchTime: number;    // Time taken to fetch (ms)
+    sourceCount: number;  // Number of sources requested
+    cached: boolean;      // True if served from cache
+    errors: string[];     // List of sources that failed to fetch
   };
 };
 ```
@@ -91,4 +111,3 @@ type RSSItem = {
   source: string;
 };
 ```
-

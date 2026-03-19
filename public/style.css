@@ -40,6 +40,13 @@ h1 img {
   position: relative;
 }
 
+.feed-item-wrap img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.5em auto;
+}
+
 .feed-item-desc-wrap {
   position: relative;
   max-height: 10vh;

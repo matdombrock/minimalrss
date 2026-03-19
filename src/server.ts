@@ -6,8 +6,9 @@ import RSSReader from './Reader';
 const urlsRaw = fs.readFileSync(process.env.RSS_URLS || 'urls-example.txt', 'utf-8');
 const urls: string[] = urlsRaw.split('\n').filter(line => line.trim() !== '');
 const port = process.env.RSS_PORT || 3000;
+const cacheDuration = Number(process.env.RSS_CACHE_DUR) || (5 * 60 * 1000); // 5 minutes
 const app = express();
-const reader = new RSSReader(urls);
+const reader = new RSSReader(urls, cacheDuration);
 
 console.log(`Loaded ${urls.length} URLs from list`);
 for (const url of urls) {
