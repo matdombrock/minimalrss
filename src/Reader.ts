@@ -12,7 +12,9 @@ type RSSItem = {
 };
 
 type RSSResponse = {
-  items: RSSItem[];
+  feeds: {
+    [key: string]: RSSItem[];
+  };
   meta: {
     fetchedAt: number;
     fetchTime: number;
@@ -40,7 +42,7 @@ class RSSReader {
   async fetchAll(): Promise<RSSResponse> {
     console.log('Fetching new data');
     let response: RSSResponse = {
-      items: [],
+      feeds: {},
       meta: {
         fetchedAt: Date.now(),
         fetchTime: 0,
@@ -62,10 +64,18 @@ class RSSReader {
         }
       })
     );
+
+    // Key response items by source
+    for (let i = 0; i < this.urls.length; i++) {
+      const source = this.urls[i];
+      if (!source) continue;
+      if (!itemsArrays[i]) continue;
+      response.feeds[source] = itemsArrays[i]!;
+    }
+
     // Flatten the array of arrays
-    response.items = itemsArrays.flat();
-    // Sort by date descending
-    response.items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // response.items = itemsArrays.flat();
+
     // Update cache
     this.updateCache(response);
     response.meta.fetchTime = Date.now() - startTime;

@@ -22,6 +22,7 @@ bun install
 > This will likely also work with NodeJS/NPM.
 
 ### RSS_URLS
+
 A URL list is a plain text file with a new URL on each line. No commas are needed.
 
 Here is an example of a `urls.txt` file. 
@@ -30,6 +31,30 @@ https://lemmy.ml/feeds/c/linux.xml?sort=Active
 https://lemmy.ml/feeds/c/lemmy.xml?sort=Active
 https://hnrss.org/frontpage
 ```
+
+The location of this file is defined with the `RSS_URLS` env var.
+
+## Run
+
+Simple:
+```bash
+bun serve
+```
+
+> [!TIP]  
+> Open your browser to [localhost:3000](http://localhost:3000) to see the feed. 
+
+Configured:
+```bash
+RSS_URLS=../my-urls.txt \
+RSS_PORT=3001 \
+RSS_CACHE_DUR=120 \
+bun serve
+```
+
+- `RSS_URLS` - URL list path - defaults to 'urls-example.txt'
+- `RSS_PORT` - Server port - defaults to 3000
+- `RSS_CACHE_DUR` - Cache duration in seconds - defaults to 5 mins. 
 
 ## Swap out the front-end
 
@@ -66,26 +91,4 @@ type RSSItem = {
   source: string;
 };
 ```
-
-## Run
-
-Simple:
-```bash
-bun serve
-```
-
-> [!TIP]  
-> Open your browser to [localhost:3000](http://localhost:3000) to see the feed. 
-
-Configured:
-```bash
-RSS_URLS=../my-urls.txt \
-RSS_PORT=3001 \
-RSS_CACHE_DUR=120 \
-bun serve
-```
-
-- `RSS_URLS` - URL list path - defaults to 'urls-example.txt'
-- `RSS_PORT` - Server port - defaults to 3000
-- `RSS_CACHE_DUR` - Cache duration in seconds - defaults to 5 mins. 
 
