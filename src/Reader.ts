@@ -85,14 +85,11 @@ class RSSReader {
     // Start all requests at once, handle errors gracefully
     const itemsArrays = await Promise.all(
       this.urls.map(async url => {
-        try {
-          return await this.urlToRSSItem(url);
-        } catch (error) {
-          console.error(`Failed to fetch or parse RSS from ${url}`);
-          console.error(error);
+        const data = await this.urlToRSSItem(url);
+        if (data.length === 0) {
           response.meta.errors.push(url);
-          return [];
         }
+        return data;
       })
     );
 
@@ -116,7 +113,14 @@ class RSSReader {
       const cleanDescription = DOMPurify.sanitize(dirty, { ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'] });
       return cleanDescription;
     }
-    const response = await axios.get(url);
+    let response;
+    try {
+      response = await axios.get(url);
+    } catch (error: any) {
+      console.error(`Failed to fetch URL: ${url}`, '\n', error.message);
+      return [];
+    }
+    // Handle axios errros
     const xml = response.data;
     const parser = new Parser({ explicitArray: false });
     const json = await parser.parseStringPromise(xml);

@@ -110,8 +110,8 @@ fetch(rssUrl)
       descWrap.appendChild(descP);
 
       descWrap.addEventListener('click', () => {
-        descWrap.classList.toggle('feed-item-desc-wrap-expanded');
-        descOverlay.classList.toggle('feed-item-overlay-expanded');
+        descWrap.classList.add('feed-item-desc-wrap-expanded');
+        descOverlay.classList.add('feed-item-overlay-expanded');
       });
 
       // Horizontal rule
