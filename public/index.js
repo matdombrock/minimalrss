@@ -41,7 +41,22 @@ fetch(rssUrl)
 
     let statusLine = `Fetched ${items.length} items from ${data.meta.sourceCount} sources in ${data.meta.fetchTime}ms at ${new Date(data.meta.fetchedAt).toLocaleString()} ${data.meta.cached ? '(cached)' : ''}`;
     statusLineElement.textContent = statusLine;
-    errorsElement.innerHTML = data.meta.errors.length > 0 ? "Can't Fetch:<br/>!! " + data.meta.errors.join('<br/>!! ') : '';
+    // errorsElement.innerHTML = data.meta.errors.length > 0 ? "Can't Fetch:<br/>!! " + data.meta.errors.join('<br/>!! ') : '';
+    if (data.meta.errors.length > 0) {
+      const errorList = document.createElement('ul');
+      for (const error of data.meta.errors) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = error;
+        a.textContent = error;
+        li.appendChild(a);
+        errorList.appendChild(li);
+      }
+      errorsElement.innerHTML = "Can't Fetch:<br/>";
+      errorsElement.appendChild(errorList);
+    } else {
+      errorsElement.textContent = '';
+    }
 
     // Display items
     for (const item of items) {

@@ -18,11 +18,6 @@ for (const url of urls) {
 app.use(express.static('public'));
 
 app.get('/json', async (_req: Request, res: Response) => {
-  // Check cache
-  const cache = reader.checkCache();
-  if (cache) {
-    return res.json(cache);
-  }
   // Fetch new data
   const response = await reader.fetchAll();
   console.log(`Fetched X items in ${response.meta.fetchTime}ms from ${response.meta.sourceCount} sources`);

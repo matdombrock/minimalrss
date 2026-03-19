@@ -1,3 +1,6 @@
 https://lemmy.ml/feeds/c/linux.xml?sort=Active
 https://lemmy.ml/feeds/c/lemmy.xml?sort=Active
 https://hnrss.org/frontpage
+https://lobste.rs/top/rss
+https://mitjafelicijan.com/feed.xml
+
